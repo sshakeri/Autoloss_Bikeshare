@@ -78,4 +78,8 @@ summary(LModel)
 ```
 ## For every 1 increase to normalized Windspeed, Rentals change by -5862.9. Accoring to small p <.05 this is significant but R-squared:  0.05501 shows this is not significant
 
-#3 
+#3 Multiple Linear Regression
+```{r}
+pairs(Rentals~Temperature+ Humidity +Windspeed ,data=Bikeshare)
+```
+
