@@ -46,3 +46,6 @@ abline(LModel,col="red" )}
 ## ------------------------------------------------------------------------
 summary(LModel)
 
+## ------------------------------------------------------------------------
+pairs(Rentals~Temperature+ Humidity +Windspeed ,data=Bikeshare)
+
