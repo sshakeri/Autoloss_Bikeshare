@@ -63,8 +63,9 @@ abline(LModel,col="red" )}
 
 ```{r}
 summary(LModel)
+
 ```
-## For every 1 increase to normalized Humidity, Rentals change by -1369.1 . Accoring to small p <.05 this is significant but the R-squared:  0.01013 shows this is not a good model
+## For every 1 increase to normalized Humidity, Rentals change by -1369.1/100 . Accoring to small p <.05 this is significant but the R-squared:  0.01013 shows this is not a good model
 
 ## 2.c) We run a simple regression for Rentals~Windspeed
 ```{r}
@@ -76,10 +77,28 @@ abline(LModel,col="red" )}
 ```{r}
 summary(LModel)
 ```
-## For every 1 increase to normalized Windspeed, Rentals change by -5862.9. Accoring to small p <.05 this is significant but R-squared:  0.05501 shows this is not significant
+## For every 1 increase to  Windspeed, Rentals change by -5862.9/69. Accoring to small p <.05 this is significant but R-squared:  0.05501 shows this is not significant
 
 #3 Multiple Linear Regression
+
+## 3.a)
 ```{r}
 pairs(Rentals~Temperature+ Humidity +Windspeed ,data=Bikeshare)
+```
+
+## 3.b) We use a multivar regression model
+
+```{r}
+model <- lm(Rentals~Temperature+ Humidity +Windspeed ,data=Bikeshare)
+```
+
+```{r}
+summary(model)
+```
+## In the order of p value Temperature,Humidity and Windspeed have the highest impact/
+## 3.c) 
+```{r}
+new_day<-data.frame(Temperature=(15-(-8))/39, Humidity=50/100,Windspeed=5/67) 
+predict(model,new_day,interval='confidence')
 ```
 

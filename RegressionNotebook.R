@@ -38,6 +38,7 @@ abline(LModel,col="red" )}
 ## ------------------------------------------------------------------------
 summary(LModel)
 
+
 ## ------------------------------------------------------------------------
 LModel=lm(Rentals~Windspeed,data=Bikeshare)
 {plot(Bikeshare$Windspeed,Bikeshare$Rentals,col='blue') 
@@ -48,4 +49,14 @@ summary(LModel)
 
 ## ------------------------------------------------------------------------
 pairs(Rentals~Temperature+ Humidity +Windspeed ,data=Bikeshare)
+
+## ------------------------------------------------------------------------
+model <- lm(Rentals~Temperature+ Humidity +Windspeed ,data=Bikeshare)
+
+## ------------------------------------------------------------------------
+summary(model)
+
+## ------------------------------------------------------------------------
+new_day<-data.frame(Temperature=(15-(-8))/39, Humidity=50/100,Windspeed=5/67) 
+predict(model,new_day,interval='confidence')
 
