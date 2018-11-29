@@ -1,0 +1,104 @@
+---
+title: "Auto Losses and Bikeshare Analysis - Shahin Shakeri"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+I use R notebooks in RStudio cloud and the data is stored in the clound on my google drive. I submitted this notebook in original format which can be simply be opened in R desktop and run.
+
+# 1- Auto Losses
+
+## 1.a) Two door cars are correlated with more losses
+```{r}
+library('lattice')
+Autoloss <- read.csv(url("https://drive.google.com/uc?export=download&id=1cbk_KGdo5sfY0c4_ALB5ULTeYQ87uU6k"),na.strings = '?')
+Autoloss <-na.omit (Autoloss)
+ByDoors=tapply(Autoloss$Losses, Autoloss$NumDoors, mean)
+barplot(ByDoors, col = rainbow(15),xlab="Number of Doors",ylab = "Loss",ylim=c(0,150))
+
+```
+
+## 1.b) Sedans have the lowest losses among the least costly losses. This doesn’t mean the entire dataset follows this pattern.
+```{r}
+Lowest<- Autoloss[order(Autoloss$Losses,decreasing=FALSE),][1:10,]
+Lowest<-tapply(Lowest$Losses,Lowest$BodyStyle , mean)
+Lowest
+
+```
+
+## 1.c) Sedans and Hatchbacks have the widest spread of losses. The losses in sedan are skewed towards the lower end where in the other styles are more or less evenly distributed.
+```{r}
+ByWheels<-tapply(Autoloss$Losses,Autoloss$BodyStyle,mean)
+ByWheels
+boxplot(Losses~BodyStyle,data=Autoloss ,col = rainbow(15))
+
+```
+
+## 1.d) Lower priced car have costlier loses than higher priced cars on average 
+```{r}
+xyplot(Losses~Price,data=Autoloss, col = rainbow(50))
+```
+
+# 2 -Bikeshare
+## 2.a) We run a simple regression for Rentals~Temperature
+```{r}
+Bikeshare <- read.csv(url("https://drive.google.com/uc?export=download&id=1jtfh-qmyDM3l_nU3AkPP_ZsepL-jHW8I"),na.strings = '?')
+LModel=lm(Rentals~Temperature,data=Bikeshare)
+{plot(Bikeshare$Temperature,Bikeshare$Rentals,col='blue') 
+abline(LModel,col="red" )}
+```
+
+```{r}
+summary(LModel)
+```
+## For every 1 change to normalized Temperature, Rentals change by 6640.7. Accoring to small p <.05 this is significant
+
+## 2.b) We run a simple regression for Rentals~Humidity
+```{r}
+LModel=lm(Rentals~Humidity,data=Bikeshare)
+{plot(Bikeshare$Humidity,Bikeshare$Rentals,col='blue') 
+abline(LModel,col="red" )}
+```
+
+```{r}
+summary(LModel)
+
+```
+## For every 1 increase to normalized Humidity, Rentals change by -1369.1/100 . Accoring to small p <.05 this is significant but the R-squared:  0.01013 shows this is not a good model
+
+## 2.c) We run a simple regression for Rentals~Windspeed
+```{r}
+LModel=lm(Rentals~Windspeed,data=Bikeshare)
+{plot(Bikeshare$Windspeed,Bikeshare$Rentals,col='blue') 
+abline(LModel,col="red" )}
+```
+
+```{r}
+summary(LModel)
+```
+## For every 1 increase to  Windspeed, Rentals change by -5862.9/69. Accoring to small p <.05 this is significant but R-squared:  0.05501 shows this is not significant
+
+# 3 Multiple Linear Regression
+
+## 3.a)
+```{r}
+pairs(Rentals~Temperature+ Humidity +Windspeed ,data=Bikeshare)
+```
+
+## 3.b) We use a multivar regression model
+
+```{r}
+model <- lm(Rentals~Temperature+ Humidity +Windspeed ,data=Bikeshare)
+```
+
+```{r}
+summary(model)
+```
+## In the order of p value Temperature,Humidity and Windspeed have the highest impact/
+## 3.c) 
+```{r}
+new_day<-data.frame(Temperature=(15-(-8))/39, Humidity=50/100,Windspeed=5/67) 
+predict(model,new_day,interval='confidence')
+```
+

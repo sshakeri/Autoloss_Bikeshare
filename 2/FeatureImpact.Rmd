@@ -1,0 +1,60 @@
+---
+title: '#3 Bikeshare & Auto Loss Analysis - Shahin Shakeri'
+output:
+  word_document: default
+  pdf_document: default
+  html_notebook: default
+---
+
+I use R notebooks in RStudio cloud and the data is stored in the clound on my google drive. I submitted this notebook in original format which can be simply be opened in R desktop and run.
+
+# 1- Bikeshare with days added
+
+## 1.a) Rentals ~ Weekends
+```{r}
+library('lattice')
+Bikeshare <- read.csv(url("https://drive.google.com/uc?export=download&id=1QwGCiIbESsE1RVjhKu9nivgvfyYFewDG"),na.strings = '?')
+Bikeshare$Weekend=Bikeshare$Weekday==5 |Bikeshare$Weekday==6
+
+```
+```{r}
+
+model <- lm(Rentals~Temperature+ Humidity +Windspeed+Weekend ,data=Bikeshare)
+summary(model)
+```
+## 1.b) Registered ~ Weekends
+```{r}
+
+model <- lm(Registered~Temperature+ Humidity +Windspeed+Weekend ,data=Bikeshare)
+summary(model)
+```
+## 1.c) Casual ~ Weekends
+```{r}
+
+model <- lm(Casual~Temperature+ Humidity +Windspeed+Weekend ,data=Bikeshare)
+summary(model)
+```
+
+
+## d) Weekends impacts casual rentals p<.05 but not significant for rental and registered (p>.05)
+
+# 2- Autoloss
+```{r}
+Autoloss <- read.csv(url("https://drive.google.com/uc?export=download&id=1-QuNWq7k4w3c8kBJ8BedIK1m-cpwORiV"),na.strings = '?')
+Autoloss <-na.omit (Autoloss)
+ByDoors=tapply(Autoloss$Losses, Autoloss$NumDoors, mean)
+```
+```{r}
+library(leaps)
+
+regfit.full=regsubsets(Losses~., data = Autoloss, nvmax=11)
+summary=summary(regfit.full)
+summary
+```
+
+# 3- Model - Sallaries
+```{r}
+function(Gender, IQ, GPA){
+  return (45 + Gender*30+IQ*.05,+20*GPA)
+}
+```
