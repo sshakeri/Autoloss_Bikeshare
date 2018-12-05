@@ -57,5 +57,5 @@ coefs
 ### i True
 ### ii True
 ### iii True
-### iv True
+### iv True i tested with hitters
 ### v True
