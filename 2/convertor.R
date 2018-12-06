@@ -1,4 +1,4 @@
 library(knitr)
-purl("Stepwise.Rmd")
+purl("Titanic.Rmd")
 
 

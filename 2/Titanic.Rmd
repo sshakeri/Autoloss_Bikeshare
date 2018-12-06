@@ -1,0 +1,120 @@
+---
+title: '#5 Titanic - Shahin Shakeri'
+output:
+  pdf_document: default
+  word_document: default
+  html_notebook: default
+---
+
+## 1 Titanic Suvrvials
+
+### Load the data, create the matrix
+```{r}
+Titanic <- read.csv("TitanicforLogReg.csv")
+#Titanic
+```
+```{r}
+x=data.frame(model.matrix(~.,data=Titanic)[,-1])
+```
+
+### Creat train/test set
+```{r}
+set.seed(1)
+train=sample(1:nrow(x), nrow(x)/2) # split data into two subsets
+test=-train
+x.train=x[train,]
+x.test=x[test,]
+```
+
+## a) Porporation of survived in train vs test
+```{r}
+
+prop.table(table(x.train$Survived))
+```
+```{r}
+prop.table(table(x.test$Survived))
+```
+## b) Logreg to see which predictors are significant
+```{r}
+library(glmnet)
+model=glm(Survived~.,data=x.train )
+summary(model)
+  
+```
+### Significant Variables: ClassTwo + ClassThree+ GenderMale + Child
+
+## c) Remove Insignifanct predictors
+```{r}
+model=glm(formula = Survived ~ ClassTwo + ClassThree+ Gendermale + Child, data = x.train)
+summary(model)
+```
+### yes, all p-vals < .05
+## d Compute probablities
+
+```{r}
+glm.probs=predict(model,newdata=x.test,type="response")
+options("digits"=2)
+glm.probs[1:5]
+
+glm.pred=rep(0,nrow(x.test))
+glm.pred[glm.probs>.5]="1"
+
+```
+ ## d) Accurqacy
+
+```{r}
+table(glm.pred,x.test$Survived)
+
+mean(glm.pred==x.test$Survived)
+```
+#2 Titanic & KNN
+```{r}
+Titanic <- read.csv("TitanicforKNN.csv")
+#Titanic
+#x=data.frame(model.matrix(~.,data=Titanic)[,-1])
+set.seed(1)
+train=sample(1:nrow(x), nrow(x)/2) # split data into two subsets
+test=-train
+x.train=x[train,]
+x.test=x[test,]
+```
+
+# a) KNN for K=1,3,5
+```{r}
+library(class)
+ 
+set.seed(1)
+train=x.train[,-1]
+test=x.test[,-1]
+trainY=x.train$Survived
+testY=x.test$Survived
+# run knn with K=1 and store prediction results in a variable called knn.pred
+knn.1.pred = knn(train,test,trainY,k=1)
+knn.3.pred = knn(train,test,trainY,k=3)
+knn.5.pred = knn(train,test,trainY,k=5)
+
+prop.table(table(x.test$Survived))
+
+
+```
+
+#b) Accuracies
+
+```{r}
+options("digits"=4)
+table(knn.1.pred,testY)
+mean(knn.1.pred==testY)
+
+```
+
+```{r}
+table(knn.3.pred,testY)
+mean(knn.3.pred==testY)
+
+```
+```{r}
+table(knn.5.pred,testY)
+mean(knn.5.pred==testY)
+
+```
+## K=1 has the highest accuracy 
